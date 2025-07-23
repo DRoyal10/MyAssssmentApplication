@@ -1,5 +1,6 @@
 package com.example.myassssmentapplication
 
+import android.content.Intent
 import android.os.Bundle
 import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
@@ -36,12 +37,14 @@ class MainActivity : AppCompatActivity() {
 
             RetrofitClient.instance.login(request).enqueue(object : Callback<LoginResponse> {
                 override fun onResponse(call: Call<LoginResponse>, response: Response<LoginResponse>) {
-                    if (response.isSuccessful) {
-                        val keypass = response.body()?.keypass
-                        tvResult.text = "Login success! keypass: $keypass"
-                        // TODO: Start Dashboard Activity and pass keypass
+                    if (response.isSuccessful && response.body() != null) {
+                        val keypass = response.body()?.keypass ?: ""
+                        val intent = Intent(this@MainActivity, DashboardActivity::class.java)
+                        intent.putExtra("KEYPASS", keypass)
+                        startActivity(intent)
+                        finish()
                     } else {
-                        tvResult.text = "Login failed. Check credentials."
+                        tvResult.text = "Login failed. Unknown error."
                     }
                 }
 
